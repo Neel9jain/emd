@@ -77,9 +77,9 @@ Nut_Coke_Rate_2020 <- (nut_coke_2020/Hot_metal_prod_2020)*1000
 Nut_Coke_Rate_2021 <-  (nut_coke_2021/Hot_metal_prod_2021)*1000
 
 ## Fuel Rate 
-Fuel_Rate_2019 <-  Coke_Rate_2019+ CDI_Rate_2019 + Nut_Coke_Rate_2019
-Fuel_Rate_2020 <-  Coke_Rate_2020+ CDI_Rate_2020 + Nut_Coke_Rate_2020
-Fuel_Rate_2021 <-  Coke_Rate_2021+ CDI_Rate_2021 + Nut_Coke_Rate_2021
+Fuel_Rate_2019 <-  Coke_Rate_2019 + CDI_Rate_2019 + Nut_Coke_Rate_2019
+Fuel_Rate_2020 <-  Coke_Rate_2020 + CDI_Rate_2020 + Nut_Coke_Rate_2020
+Fuel_Rate_2021 <-  Coke_Rate_2021 + CDI_Rate_2021 + Nut_Coke_Rate_2021
 
 
 
