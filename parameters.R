@@ -4,6 +4,7 @@ library(readxl)
 
 
 path = "C:/Users/Administrator/Documents/Data Science using R/Projects/emd/DataScience-BF"
+Months = c("APR","MAY","JUNE","JULY","AUG","SEP","OCT","NOV","DEC","JAN","FEB","MAR","Yearly")
 
 
 ## read hot metal production 
@@ -49,28 +50,43 @@ nut_coke_2021 <- read_excel(paste(path,"/VPARAMETERS(2021-22)C&IT.xls",sep=""),r
 
 ## Productivity 
 Productivity_2019 <-  Hot_metal_prod_2019/Vol_Day_2019
+Productivity_2019 <- cbind(Months,Productivity_2019)
 Productivity_2020 <- Hot_metal_prod_2020/Vol_Day_2020
+Productivity_2020 <- cbind(Months,Productivity_2020[-1,])
 Productivity_2021 <- Hot_metal_prod_2021/Vol_Day_2021
+Productivity_2021 <- cbind(Months,Productivity_2021[-1,])
 
 ## Coke Rate 
 Coke_Rate_2019 <- (Coke_kg_2019/Hot_metal_prod_2019)*1000
+Coke_Rate_2019 <- cbind(Months,Coke_Rate_2019)
 Coke_Rate_2020 <- (Coke_kg_2020/Hot_metal_prod_2020)*1000
+Coke_Rate_2020 <- cbind(Months,Coke_Rate_2020[-1,])
 Coke_Rate_2021 <- (Coke_kg_2021/Hot_metal_prod_2021)*1000
+Coke_Rate_2021 <- cbind(Months,Coke_Rate_2021[-1,])
 
 ## CDI Rate 
 CDI_Rate_2019 <-  (CDI_kg_2019/Hot_metal_prod_2019)*1000
+CDI_Rate_2019 <- cbind(Months,CDI_Rate_2019)
 CDI_Rate_2020 <-  (CDI_kg_2020/Hot_metal_prod_2020)*1000
+CDI_Rate_2020 <- cbind(Months,CDI_Rate_2020[-1,])
 CDI_Rate_2021 <-  (CDI_kg_2021/Hot_metal_prod_2021)*1000
+CDI_Rate_2021 <- cbind(Months,CDI_Rate_2021[-1,])
 
 ## Nut Coke Rate 
 Nut_Coke_Rate_2019 <- (nut_coke_2019/Hot_metal_prod_2019)*1000
+Nut_Coke_Rate_2019 <- cbind(Months,Nut_Coke_Rate_2019)
 Nut_Coke_Rate_2020 <- (nut_coke_2020/Hot_metal_prod_2020)*1000
+Nut_Coke_Rate_2020 <- cbind(Months,Nut_Coke_Rate_2020[-1,])
 Nut_Coke_Rate_2021 <-  (nut_coke_2021/Hot_metal_prod_2021)*1000
+Nut_Coke_Rate_2021 <- cbind(Months,Nut_Coke_Rate_2021[-1,])
 
 ## Fuel Rate 
-Fuel_Rate_2019 <-  Coke_Rate_2019 + CDI_Rate_2019 + Nut_Coke_Rate_2019
-Fuel_Rate_2020 <-  Coke_Rate_2020 + CDI_Rate_2020 + Nut_Coke_Rate_2020
-Fuel_Rate_2021 <-  Coke_Rate_2021 + CDI_Rate_2021 + Nut_Coke_Rate_2021
+Fuel_Rate_2019 <-  Coke_Rate_2019[,-1] + CDI_Rate_2019[,-1] + Nut_Coke_Rate_2019[,-1]
+Fuel_Rate_2019 <- cbind(Months,Fuel_Rate_2019)
+Fuel_Rate_2020 <-  Coke_Rate_2020[,-1] + CDI_Rate_2020[,-1] + Nut_Coke_Rate_2020[,-1]
+Fuel_Rate_2020 <- cbind(Months,Fuel_Rate_2020)
+Fuel_Rate_2021 <-  Coke_Rate_2021[,-1] + CDI_Rate_2021[,-1] + Nut_Coke_Rate_2021[,-1]
+Fuel_Rate_2021 <- cbind(Months,Fuel_Rate_2021)
 
 
 
