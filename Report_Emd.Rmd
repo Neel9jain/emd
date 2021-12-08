@@ -1,0 +1,651 @@
+---
+title: "PPC_Data"
+author: "BSP"
+date: "02/12/2021"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+-------------------------------------------------------------------------------------------------------------------------
+This Report demonstrates important Performance parameters for the Blast furnaces in the years 2019,2020,2021 
+
+
+
+## Productivity 
+
+Productivity for the purpose of the report is calculated by the formula 
+
+
+
+               PRODUCTIVITY = HOT METAL PRODUCTION / USEFUL BF VOLUME 
+
+
+
+
+```{r productivity, include=FALSE}
+library(reshape2)
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+
+## melting and reshaping the data for plotting 
+
+Productivity_2019 <- melt(Productivity_2019,id="Months")
+Productivity_2019 <- subset(Productivity_2019,!is.na(Productivity_2019$value))
+Productivity_2019$Months <- factor(Productivity_2019$Months, levels = Months)
+
+Productivity_2020 <- melt(Productivity_2020,id="Months")
+Productivity_2020 <- subset(Productivity_2020,!is.na(Productivity_2020$value))
+Productivity_2020$Months <- factor(Productivity_2020$Months, levels = Months)
+
+Productivity_2021 <- melt(Productivity_2021,id="Months")
+Productivity_2021 <- subset(Productivity_2021,!is.na(Productivity_2021$value))
+Productivity_2021$Months <- factor(Productivity_2021$Months, levels = Months)
+
+```
+
+
+
+Graphs for productivity for the year 2019,2020,2021 
+
+
+
+```{r productivity_2019 ,echo=FALSE}
+library(ggplot2)
+ggplot(Productivity_2019,            
+                          aes(x = Months,
+                              y = value,group=variable,
+                              color = variable)) +  geom_line() + ggtitle("Produtivity (T/M3/D) 2019")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r productivity_2020 , echo=FALSE}
+library(ggplot2)
+ggplot(Productivity_2020,            
+                          aes(x = Months,
+                              y = value,group=variable,
+                              color = variable)) +  geom_line() + ggtitle("Produtivity (T/M3/D) 2020")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r productivity_2021 ,echo=FALSE}
+library(ggplot2)
+ggplot(Productivity_2021,            
+                          aes(x = Months,
+                              y = value,group=variable,
+                              color = variable)) +  geom_line() + ggtitle("Produtivity (T/M3/D) 2021")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+## Total Production Vs Productivity 
+
+
+```{r bar1 ,echo=FALSE}
+library(reshape2)
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+
+Productivity_2019_bar <-  Hot_metal_prod_2019/Vol_Day_2019
+Productivity_2019_bar <- cbind(Months,Productivity_2019_bar)
+Productivity_2020_bar <- Hot_metal_prod_2020/Vol_Day_2020
+Productivity_2020_bar <- cbind(Months,Productivity_2020_bar[-1,])
+Productivity_2021_bar <- Hot_metal_prod_2021/Vol_Day_2021
+Productivity_2021_bar <- cbind(Months,Productivity_2021_bar[-1,])
+
+
+```
+
+
+
+```{r bar19 ,echo=FALSE,warning=FALSE}
+Total_Prod_2019 <- data.frame(cbind(Months,Hot_metal_prod_2019$SHOP,format(round(Productivity_2019_bar$SHOP,2),nsmall=2)))
+
+
+names(Total_Prod_2019) <- c("Months","Total Hot Metal Production","Total Productivity")
+
+Total_Prod_2019_plot <- melt(Total_Prod_2019,id="Months")
+Total_Prod_2019_plot <- subset(Total_Prod_2019_plot,!is.na(Total_Prod_2019_plot$value))
+Total_Prod_2019_plot$Months <- factor(Total_Prod_2019_plot$Months, levels = Months)
+
+ggplot(Total_Prod_2019_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2019")+theme(plot.title = element_text(hjust = 0.5))
+```
+  
+  
+```{r bar20 ,echo=FALSE,warning=FALSE}
+Total_Prod_2020 <- data.frame(cbind(Months,Hot_metal_prod_2020$SHOP,format(round(Productivity_2020_bar$SHOP,2),nsmall=2)))
+
+names(Total_Prod_2020) <- c("Months","Total Hot Metal Production","Total Productivity")
+
+Total_Prod_2020_plot <- melt(Total_Prod_2020[-1,],id="Months")
+Total_Prod_2020_plot <- subset(Total_Prod_2020_plot,!is.na(Total_Prod_2020_plot$value))
+Total_Prod_2020_plot$Months <- factor(Total_Prod_2020_plot$Months, levels = Months)
+
+ggplot(Total_Prod_2020_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2020")+theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+```{r bar21 ,echo=FALSE,warning=FALSE}
+
+Total_Prod_2021 <- data.frame(cbind(Months,Hot_metal_prod_2021$SHOP,format(round(Productivity_2021_bar$SHOP,2),nsmall=2)))
+
+names(Total_Prod_2021) <- c("Months","Total Hot Metal Production","Total Productivity")
+Total_Prod_2021 <- subset(Total_Prod_2021 , (Total_Prod_2021$`Total Hot Metal Production` > 0 & Total_Prod_2021$`Total Productivity` > 0)) 
+Total_Prod_2021_plot <- melt(Total_Prod_2021[-1,],id="Months")
+Total_Prod_2021_plot <- subset(Total_Prod_2021_plot,Total_Prod_2021_plot$value > 0)
+Total_Prod_2021_plot$Months <- factor(Total_Prod_2021_plot$Months, levels = Months)
+
+ggplot(Total_Prod_2021_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2021")+theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+\newpage
+
+## Coke Rate 
+
+Coke Rate for the purpose of the report is calculated by the formula 
+
+
+
+                         Coke Rate = Coke / THM 
+
+
+
+```{r coke_rate, include=FALSE}
+library(reshape2)
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+
+## melting and reshaping the data for plotting 
+
+Coke_Rate_2019 <- melt(Coke_Rate_2019,id="Months")
+Coke_Rate_2019 <- subset(Coke_Rate_2019,!is.na(Coke_Rate_2019$value))
+Coke_Rate_2019$Months <- factor(Coke_Rate_2019$Months, levels = Months)
+
+Coke_Rate_2020 <- melt(Coke_Rate_2020,id="Months")
+Coke_Rate_2020 <- subset(Coke_Rate_2020,!is.na(Coke_Rate_2020$value))
+Coke_Rate_2020$Months <- factor(Coke_Rate_2020$Months, levels = Months)
+
+Coke_Rate_2021 <- melt(Coke_Rate_2021,id="Months")
+Coke_Rate_2021 <- subset(Coke_Rate_2021,!is.na(Coke_Rate_2021$value))
+Coke_Rate_2021$Months <- factor(Coke_Rate_2021$Months, levels = Months)
+
+```
+
+
+
+
+Graphs for Coke Rate for the year 2019,2020,2021 
+
+
+
+
+
+```{r Coke_Rate_2019 ,echo=FALSE}
+library(ggplot2)
+ggplot(Coke_Rate_2019,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Coke Rate (KG/THM) 2019")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r Coke_Rate_2020,echo=FALSE}
+library(ggplot2)
+ggplot(Coke_Rate_2020,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line()  + ggtitle("Coke Rate (KG/THM) 2020")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r Coke_Rate_2021,echo=FALSE}
+library(ggplot2)
+ggplot(Coke_Rate_2021,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Coke Rate (KG/THM) 2021")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+## Total Production Vs Coke Rate  
+
+
+```{r barcr1 ,echo=FALSE}
+
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+library(reshape2)
+
+Coke_Rate_2019_bar <- (Coke_kg_2019/Hot_metal_prod_2019)*1000
+Coke_Rate_2019_bar <- cbind(Months,Coke_Rate_2019_bar)
+Coke_Rate_2020_bar <- (Coke_kg_2020/Hot_metal_prod_2020)*1000
+Coke_Rate_2020_bar <- cbind(Months,Coke_Rate_2020_bar[-1,])
+Coke_Rate_2021_bar <- (Coke_kg_2021/Hot_metal_prod_2021)*1000
+Coke_Rate_2021_bar <- cbind(Months,Coke_Rate_2021_bar[-1,])
+
+
+
+```
+
+
+
+```{r barcr19 ,echo=FALSE,warning=FALSE}
+
+
+x <- Hot_metal_prod_2019$SHOP
+
+Total_CR_2019 <- data.frame(cbind(Months,x/400,format(round(Coke_Rate_2019_bar$SHOP,0),nsmall=0)))
+
+
+names(Total_CR_2019) <- c("Months","Total Hot Metal Production","Total Coke Rate")
+
+Total_CR_2019_plot <- melt(Total_CR_2019,id="Months")
+Total_CR_2019_plot <- subset(Total_CR_2019_plot,!is.na(Total_CR_2019_plot$value))
+Total_CR_2019_plot$Months <- factor(Total_CR_2019_plot$Months, levels = Months)
+Total_CR_2019_plot$value <- as.numeric(Total_CR_2019_plot$value )
+Total_CR_2019_plot <- Total_CR_2019_plot[c(-26,-13),]
+
+ggplot(Total_CR_2019_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2019")+theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+  
+  
+```{r barcr20 ,echo=FALSE,warning=FALSE}
+x <- Hot_metal_prod_2020[-1,]$SHOP
+Total_CR_2020 <- data.frame(cbind(Months,x/400,format(round(Coke_Rate_2020_bar$SHOP,0),nsmall=0)))
+
+names(Total_CR_2020) <- c("Months","Total Hot Metal Production","Total Coke Rate")
+
+Total_CR_2020_plot <- melt(Total_CR_2020,id="Months")
+Total_CR_2020_plot <- subset(Total_CR_2020_plot,!is.na(Total_CR_2020_plot$value))
+Total_CR_2020_plot$Months <- factor(Total_CR_2020_plot$Months, levels = Months)
+Total_CR_2020_plot$value <- as.numeric(Total_CR_2020_plot$value )
+
+
+Total_CR_2020_plot <- Total_CR_2020_plot[c(-26,-13),]
+
+ggplot(Total_CR_2020_plot, aes(x=Months, y=value, fill=variable))+
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2020")+theme(plot.title = element_text(hjust = 0.5))
+
+
+
+```
+
+```{r barcr21 ,echo=FALSE,warning=FALSE}
+
+x <- Hot_metal_prod_2021[-1,]$SHOP
+Total_CR_2021 <- data.frame(cbind(Months,x/400,format(round(Coke_Rate_2021_bar$SHOP,0),nsmall=0)))
+
+names(Total_CR_2021) <- c("Months","Total Hot Metal Production","Total Coke Rate")
+Total_CR_2021 <- subset(Total_CR_2021 , (Total_CR_2021$`Total Hot Metal Production` > 0 & Total_CR_2021$`Total Coke Rate`> 0)) 
+Total_CR_2021_plot <- melt(Total_CR_2021,id="Months")
+Total_CR_2021_plot <- subset(Total_CR_2021_plot,Total_CR_2021_plot$value > 0)
+Total_CR_2021_plot$Months <- factor(Total_CR_2021_plot$Months, levels = Months)
+Total_CR_2021_plot$value <- as.numeric(Total_CR_2021_plot$value )
+
+
+Total_CR_2021_plot <- Total_CR_2021_plot[c(-8,-16),]
+
+
+ggplot(Total_CR_2021_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2021")+theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+
+
+\newpage
+
+## CDI RATE 
+
+CDI Rate for the purpose of the report is calculated by the formula 
+
+
+
+                                 CDI Rate = CDI / THM 
+
+
+
+
+```{r CDI_Rate ,include=FALSE}
+
+library(reshape2)
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+
+## melting and reshaping the data for plotting 
+
+CDI_Rate_2019 <- melt(CDI_Rate_2019,id="Months")
+CDI_Rate_2019 <- subset(CDI_Rate_2019,!is.na(CDI_Rate_2019$value))
+CDI_Rate_2019$Months <- factor(CDI_Rate_2019$Months, levels = Months)
+
+CDI_Rate_2020 <- melt(CDI_Rate_2020,id="Months")
+CDI_Rate_2020 <- subset(CDI_Rate_2020,!is.na(CDI_Rate_2020$value))
+CDI_Rate_2020$Months <- factor(CDI_Rate_2020$Months, levels = Months)
+
+
+CDI_Rate_2021 <- melt(CDI_Rate_2021,id="Months")
+CDI_Rate_2021 <- subset(CDI_Rate_2021,!is.na(CDI_Rate_2021$value))
+CDI_Rate_2021$Months <- factor(CDI_Rate_2021$Months, levels = Months)
+```
+
+
+
+
+
+Graphs for CDI Rate for the year 2019,2020,2021
+
+
+
+
+```{r CDI_Rate_2019,echo=FALSE}
+library(ggplot2)
+ggplot(CDI_Rate_2019,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("CDI Rate (KG/THM) 2019")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r CDI_Rate_2020,echo=FALSE}
+library(ggplot2)
+ggplot(CDI_Rate_2020,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("CDI Rate (KG/THM) 2020")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r CDI_Rate_2021,echo=FALSE}
+library(ggplot2)
+ggplot(CDI_Rate_2021,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("CDI Rate (KG/THM) 2021")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Total Production Vs CDI Rate  
+
+
+```{r barcd1 ,echo=FALSE}
+
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+library(reshape2)
+
+CDI_Rate_2019_bar <-  (CDI_kg_2019/Hot_metal_prod_2019)*1000
+CDI_Rate_2019_bar <- cbind(Months,CDI_Rate_2019_bar)
+CDI_Rate_2020_bar <-  (CDI_kg_2020/Hot_metal_prod_2020)*1000
+CDI_Rate_2020_bar <- cbind(Months,CDI_Rate_2020_bar[-1,])
+CDI_Rate_2021_bar <-  (CDI_kg_2021/Hot_metal_prod_2021)*1000
+CDI_Rate_2021_bar <- cbind(Months,CDI_Rate_2021_bar[-1,])
+
+
+
+
+```
+
+
+
+```{r barcd19 ,echo=FALSE,warning=FALSE , include=FALSE}
+Total_CDI_2019 <- data.frame(cbind(Months,Hot_metal_prod_2019$SHOP,format(round(CDI_Rate_2019_bar$SHOP,0),nsmall=0)))
+
+
+names(Total_CDI_2019) <- c("Months","Total Hot Metal Production","Total Coke Rate")
+
+Total_CDI_2019_plot <- melt(Total_CDI_2019,id="Months")
+Total_CDI_2019_plot <- subset(Total_CDI_2019_plot,!is.na(Total_CDI_2019_plot$value))
+Total_CDI_2019_plot$Months <- factor(Total_CDI_2019_plot$Months, levels = Months)
+
+ggplot(Total_CDI_2019_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2019")+theme(plot.title = element_text(hjust = 0.5))
+
+
+
+```
+  
+  
+```{r barcd20 ,echo=FALSE,warning=FALSE,include=FALSE}
+
+Total_CDI_2020 <- data.frame(cbind(Months,Hot_metal_prod_2020$SHOP,format(round(CDI_Rate_2020_bar$SHOP,0),nsmall=0)))
+
+names(Total_CDI_2020) <- c("Months","Total Hot Metal Production","Total Coke Rate")
+
+Total_CDI_2020_plot <- melt(Total_CDI_2020[-1,],id="Months")
+Total_CDI_2020_plot <- subset(Total_CDI_2020_plot,!is.na(Total_CDI_2020_plot$value))
+Total_CDI_2020_plot$Months <- factor(Total_CDI_2020_plot$Months, levels = Months)
+
+ggplot(Total_CDI_2020_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2020")+theme(plot.title = element_text(hjust = 0.5))
+
+
+```
+
+```{r barcd21 ,echo=FALSE,warning=FALSE , include=FALSE}
+Total_CDI_2021 <- data.frame(cbind(Months,Hot_metal_prod_2021$SHOP,format(round(CDI_Rate_2021_bar$SHOP,0),nsmall=0)))
+
+names(Total_CDI_2021) <- c("Months","Total Hot Metal Production","Total CDI Rate")
+Total_CDI_2021 <- subset(Total_CDI_2021,(! Total_CDI_2021$`Total CDI Rate` == "NaN" & ! Total_CDI_2021$`Total Hot Metal Production` == 0 ))
+Total_CDI_2021_plot <- melt(Total_CDI_2021[-1,],id="Months")
+Total_CDI_2021_plot$Months <- factor(Total_CDI_2021_plot$Months, levels = Months)
+
+ggplot(Total_CDI_2021_plot, aes(x=Months, y=value, fill=variable)) +
+  geom_bar(stat='identity', position='dodge')+ ggtitle("2021")+theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+
+
+\newpage
+
+## Nut Coke Rate 
+
+
+Nut Coke Rate for the purpose of the report is calculated by the formula 
+
+
+
+                                 Nut Coke Rate = Nut Coke / THM 
+
+
+
+```{r Nut_Coke, include=FALSE}
+library(reshape2)
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+
+## melting and reshaping the data for plotting 
+
+Nut_Coke_Rate_2019 <- melt(Nut_Coke_Rate_2019,id="Months")
+Nut_Coke_Rate_2019 <- subset(Nut_Coke_Rate_2019,!is.na(Nut_Coke_Rate_2019$value))
+Nut_Coke_Rate_2019$Months <- factor(Nut_Coke_Rate_2019$Months, levels = Months)
+
+Nut_Coke_Rate_2020 <- melt(Nut_Coke_Rate_2020,id="Months")
+Nut_Coke_Rate_2020 <- subset(Nut_Coke_Rate_2020,!is.na(Nut_Coke_Rate_2020$value))
+Nut_Coke_Rate_2020$Months <- factor(Nut_Coke_Rate_2020$Months, levels = Months)
+
+Nut_Coke_Rate_2021 <- melt(Nut_Coke_Rate_2021,id="Months")
+Nut_Coke_Rate_2021 <- subset(Nut_Coke_Rate_2021,!is.na(Nut_Coke_Rate_2021$value))
+Nut_Coke_Rate_2021$Months <- factor(Nut_Coke_Rate_2021$Months, levels = Months)
+```
+
+
+
+
+
+Graphs for Nut Coke Rate for the year 2019,2020,2021
+
+
+
+
+```{r Nut_Coke_Rate_2019,echo=FALSE}
+library(ggplot2)
+ggplot(Nut_Coke_Rate_2019,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Nut Coke Rate (KG/THM) 2019")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r Nut_Coke_Rate_2020,echo=FALSE}
+library(ggplot2)
+ggplot(Nut_Coke_Rate_2020,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Nut Coke Rate (KG/THM) 2020")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r Nut_Coke_Rate_2021,echo=FALSE}
+library(ggplot2)
+ggplot(Nut_Coke_Rate_2021,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Nut Coke Rate (KG/THM) 2021")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+
+## Total Production Vs CDI Rate  
+
+
+```{r barNRC1 ,echo=FALSE}
+
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+library(reshape2)
+
+
+
+
+
+
+```
+
+
+
+```{r barNRC19 ,echo=FALSE,warning=FALSE}
+
+
+
+```
+  
+  
+```{r barNRC20 ,echo=FALSE,warning=FALSE}
+
+
+
+
+```
+
+```{r barNRC21 ,echo=FALSE,warning=FALSE}
+
+
+
+```
+
+
+
+\newpage
+ 
+## Fuel Rate
+
+Fuel Rate for the purpose of the report is calculated by the formula 
+
+
+
+                                Fuel Rate = Coke Rate + CDI Rate + Nut Coke Rate 
+
+
+
+```{r Fuel_Rate, include=FALSE}
+library(reshape2)
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+
+## melting and reshaping the data for plotting 
+
+Fuel_Rate_2019 <- melt(Fuel_Rate_2019,id="Months")
+Fuel_Rate_2019 <- subset(Fuel_Rate_2019,!is.na(Fuel_Rate_2019$value))
+Fuel_Rate_2019$Months <- factor(Fuel_Rate_2019$Months, levels = Months)
+
+Fuel_Rate_2020 <- melt(Fuel_Rate_2020,id="Months")
+Fuel_Rate_2020 <- subset(Fuel_Rate_2020,!is.na(Fuel_Rate_2020$value))
+Fuel_Rate_2020$Months <- factor(Fuel_Rate_2020$Months, levels = Months)
+
+Fuel_Rate_2021 <- melt(Fuel_Rate_2021,id="Months")
+Fuel_Rate_2021 <- subset(Fuel_Rate_2021,!is.na(Fuel_Rate_2021$value))
+Fuel_Rate_2021$Months <- factor(Fuel_Rate_2021$Months, levels = Months)
+```
+
+
+
+
+Graphs for Fuel Rate for the year 2019,2020,2021
+
+
+
+
+```{r Fuel_Rate_2019,echo=FALSE}
+library(ggplot2)
+ggplot(Fuel_Rate_2019,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Fuel Rate (KG/THM) 2019")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r Fuel_Rate_2020,echo=FALSE}
+library(ggplot2)
+ggplot(Fuel_Rate_2020,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Fuel Rate (KG/THM) 2020")+theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r Fuel_Rate_2021,echo=FALSE}
+library(ggplot2)
+ggplot(Fuel_Rate_2021,            
+       aes(x = Months,
+           y = value,group=variable,
+           color = variable)) +  geom_line() + ggtitle("Fuel Rate (KG/THM) 2021")+theme(plot.title = element_text(hjust = 0.5))
+```
+## Total Production Vs CDI Rate  
+
+
+```{r barFR1 ,echo=FALSE}
+
+source("~/Data Science using R/Projects/emd/parameters.R")
+
+library(reshape2)
+
+
+
+
+
+
+```
+
+
+
+```{r barFR19 ,echo=FALSE,warning=FALSE}
+
+
+
+```
+  
+  
+```{r barFR20 ,echo=FALSE,warning=FALSE}
+
+
+
+
+```
+
+```{r barFR21 ,echo=FALSE,warning=FALSE}
+
+
+
+```
+
+
+PS:Some of the Blast furnaces were not operational during the calculation of the data and hence the gaps. 
